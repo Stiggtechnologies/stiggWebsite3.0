@@ -1,0 +1,24 @@
+<svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background circle -->
+  <circle cx="16" cy="16" r="16" fill="#8B1538"/>
+  
+  <!-- Shield outline -->
+  <path d="M16 4L22 7V14C22 19 19 23 16 25C13 23 10 19 10 14V7L16 4Z" 
+        fill="none" 
+        stroke="white" 
+        stroke-width="1.5" 
+        stroke-linejoin="round"/>
+  
+  <!-- Inner shield -->
+  <path d="M16 6L20 8V13.5C20 17.5 18 20.5 16 22C14 20.5 12 17.5 12 13.5V8L16 6Z" 
+        fill="white" 
+        fill-opacity="0.9"/>
+  
+  <!-- Security symbol - stylized "S" -->
+  <path d="M14.5 11C14.5 10.2 15.2 9.5 16 9.5C16.8 9.5 17.5 10.2 17.5 11C17.5 11.5 17.2 11.9 16.8 12.1L17.5 14H16L15.5 12.5H15V14H14V11.5C14 11.2 14.2 11 14.5 11Z" 
+        fill="#8B1538"/>
+  
+  <!-- Additional security elements -->
+  <circle cx="16" cy="17" r="1" fill="#8B1538"/>
+  <rect x="15" y="18" width="2" height="2" fill="#8B1538"/>
+</svg>

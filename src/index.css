@@ -1,0 +1,108 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Enhanced accessibility and contrast styles */
+@layer base {
+  /* Ensure proper text contrast ratios */
+  body {
+    @apply text-text-primary;
+  }
+  
+  /* High contrast focus states */
+  *:focus {
+    @apply outline-2 outline-offset-2 outline-stigg-red;
+  }
+  
+  /* Improved button contrast */
+  .btn-primary {
+    @apply bg-stigg-red text-white hover:bg-stigg-red-dark focus:bg-stigg-red-dark;
+    /* Ensure 4.5:1 contrast ratio */
+  }
+  
+  .btn-secondary {
+    @apply bg-white text-stigg-red border-2 border-stigg-red hover:bg-stigg-red hover:text-white;
+  }
+  
+  /* Enhanced link contrast */
+  .link-primary {
+    @apply text-stigg-red hover:text-stigg-red-dark underline-offset-2;
+  }
+  
+  /* Alert and status colors with proper contrast */
+  .alert-success {
+    @apply bg-stigg-success-light text-stigg-success border border-stigg-success;
+  }
+  
+  .alert-warning {
+    @apply bg-stigg-warning-light text-stigg-warning border border-stigg-warning;
+  }
+  
+  .alert-error {
+    @apply bg-stigg-error-light text-stigg-error border border-stigg-error;
+  }
+  
+  /* Improved form input contrast */
+  .form-input {
+    @apply border-gray-300 text-text-primary placeholder-text-muted focus:border-stigg-red focus:ring-stigg-red;
+  }
+  
+  /* Enhanced card and section backgrounds */
+  .card-bg {
+    @apply bg-white border border-gray-200 shadow-sm;
+  }
+  
+  .section-bg-light {
+    @apply bg-gray-50;
+  }
+  
+  .section-bg-dark {
+    @apply bg-stigg-dark text-white;
+  }
+}
+
+/* Ensure proper contrast for all text elements */
+@layer components {
+  .text-contrast-high {
+    @apply text-text-primary;
+  }
+  
+  .text-contrast-medium {
+    @apply text-text-secondary;
+  }
+  
+  .text-contrast-low {
+    @apply text-text-muted;
+  }
+  
+  /* Enhanced gradient with better contrast */
+  .gradient-primary {
+    background: linear-gradient(135deg, #0f172a 0%, #8B1538 100%);
+  }
+  
+  .gradient-secondary {
+    background: linear-gradient(135deg, #374151 0%, #6b7280 100%);
+  }
+}
+
+/* Dark mode support with proper contrast */
+@media (prefers-color-scheme: dark) {
+  .dark-mode-support {
+    @apply bg-gray-900 text-gray-100;
+  }
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  .high-contrast {
+    @apply border-2 border-black;
+  }
+  
+  .btn-primary {
+    @apply bg-black text-white border-2 border-white;
+  }
+  
+  .btn-secondary {
+    @apply bg-white text-black border-2 border-black;
+  }
+}
