@@ -43,6 +43,11 @@ export const Analytics: React.FC = () => {
   const fetchAnalytics = async () => {
     setLoading(true);
     try {
+      if (!supabase) {
+        setData(null);
+        return;
+      }
+
       const startDate = new Date();
       startDate.setDate(startDate.getDate() - dateRange);
 
