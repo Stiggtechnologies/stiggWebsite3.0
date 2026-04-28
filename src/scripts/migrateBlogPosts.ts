@@ -11,6 +11,11 @@ import { allBlogPosts } from '../data/blogPosts';
 async function migrateBlogPosts() {
   console.log(`Starting migration of ${allBlogPosts.length} blog posts...`);
 
+  if (!supabase) {
+    console.error('Database is not configured. Please set VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY environment variables.');
+    process.exit(1);
+  }
+
   let successCount = 0;
   let errorCount = 0;
 
