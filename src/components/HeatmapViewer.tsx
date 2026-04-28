@@ -31,6 +31,11 @@ export const HeatmapViewer: React.FC<HeatmapViewerProps> = ({
   const fetchClickData = async () => {
     setLoading(true);
     try {
+      if (!supabase) {
+        setLoading(false);
+        return;
+      }
+
       const startDate = new Date();
       startDate.setDate(startDate.getDate() - dateRange);
 
