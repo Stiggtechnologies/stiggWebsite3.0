@@ -34,6 +34,11 @@ export const NewsletterManager: React.FC = () => {
 
   const loadData = async () => {
     try {
+      if (!supabase) {
+        setLoading(false);
+        return;
+      }
+
       // Load campaigns
       const { data: campaignsData } = await supabase
         .from('newsletter_campaigns')
@@ -68,6 +73,10 @@ export const NewsletterManager: React.FC = () => {
     e.preventDefault();
 
     try {
+      if (!supabase) {
+        throw new Error('Database is not configured');
+      }
+
       const campaignData: any = {
         title: formData.title,
         subject: formData.subject,
