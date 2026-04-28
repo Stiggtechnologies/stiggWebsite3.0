@@ -30,6 +30,10 @@ export interface NewsletterSubscription {
 }
 
 export async function submitContactForm(data: ContactSubmission) {
+  if (!supabase) {
+    throw new Error('Database is not configured');
+  }
+
   const { data: result, error } = await supabase
     .from('contact_submissions')
     .insert([{
@@ -79,6 +83,10 @@ export async function submitContactForm(data: ContactSubmission) {
 }
 
 export async function submitQuoteRequest(data: QuoteRequest) {
+  if (!supabase) {
+    throw new Error('Database is not configured');
+  }
+
   const { data: result, error } = await supabase
     .from('quote_requests')
     .insert([{
@@ -136,6 +144,10 @@ export async function submitQuoteRequest(data: QuoteRequest) {
 }
 
 export async function subscribeToNewsletter(data: NewsletterSubscription) {
+  if (!supabase) {
+    throw new Error('Database is not configured');
+  }
+
   const { data: result, error } = await supabase
     .from('newsletter_subscribers')
     .insert([{
@@ -182,6 +194,10 @@ export async function subscribeToNewsletter(data: NewsletterSubscription) {
 }
 
 export async function saveLead(leadData: any) {
+  if (!supabase) {
+    throw new Error('Database is not configured');
+  }
+
   const { data: existingLead } = await supabase
     .from('leads')
     .select('id')
@@ -284,6 +300,10 @@ export async function saveLead(leadData: any) {
 }
 
 export async function saveChatSession(sessionData: any) {
+  if (!supabase) {
+    throw new Error('Database is not configured');
+  }
+
   const { data: result, error } = await supabase
     .from('ai_chat_sessions')
     .insert([{
@@ -305,6 +325,10 @@ export async function saveChatSession(sessionData: any) {
 }
 
 export async function updateChatSession(sessionId: string, updates: any) {
+  if (!supabase) {
+    throw new Error('Database is not configured');
+  }
+
   const { data: result, error } = await supabase
     .from('ai_chat_sessions')
     .update({
