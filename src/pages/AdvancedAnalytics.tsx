@@ -46,6 +46,11 @@ export const AdvancedAnalytics: React.FC = () => {
   const fetchAdvancedAnalytics = async () => {
     setLoading(true);
     try {
+      if (!supabase) {
+        setLoading(false);
+        return;
+      }
+
       const startDate = new Date();
       startDate.setDate(startDate.getDate() - dateRange);
 
