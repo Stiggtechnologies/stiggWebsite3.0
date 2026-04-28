@@ -12,6 +12,8 @@ function getSessionId(): string {
 // Geographic tracking using IP Geolocation API
 export async function trackGeographicData() {
   try {
+    if (!supabase) return;
+
     const sessionId = getSessionId();
 
     // Check if already tracked for this session
@@ -65,6 +67,8 @@ function hashIP(ip: string): string {
 export function initializeClickTracking() {
   document.addEventListener('click', async (event) => {
     try {
+      if (!supabase) return;
+
       const target = event.target as HTMLElement;
       const sessionId = getSessionId();
 
@@ -133,6 +137,8 @@ function getElementSelector(element: HTMLElement): string {
 
 // Scroll depth tracking
 export function initializeScrollTracking() {
+  if (!supabase) return;
+
   let maxScrollDepth = 0;
   let scrollStartTime = Date.now();
   let scrollTimeout: NodeJS.Timeout;
@@ -279,7 +285,7 @@ function recordEvent(type: string, event: Event) {
 }
 
 async function saveRecording() {
-  if (recordingEvents.length === 0) return;
+  if (recordingEvents.length === 0 || !supabase) return;
 
   try {
     const sessionId = getSessionId();
@@ -303,6 +309,8 @@ async function saveRecording() {
 
 // Track exit page and session end
 export function initializeExitTracking() {
+  if (!supabase) return;
+
   let pageStartTime = Date.now();
   let sessionStartTime = Date.now();
   let pagesVisited = 0;
@@ -352,6 +360,8 @@ export function initializeExitTracking() {
 // A/B Testing
 export async function initializeABTest(testName: string, variants: string[]) {
   try {
+    if (!supabase) return variants[0];
+
     const sessionId = getSessionId();
 
     // Check if session already has variant
@@ -387,6 +397,8 @@ export async function initializeABTest(testName: string, variants: string[]) {
 
 export async function trackABTestConversion(testName: string) {
   try {
+    if (!supabase) return;
+
     const sessionId = getSessionId();
 
     await supabase
@@ -402,6 +414,8 @@ export async function trackABTestConversion(testName: string) {
 // Cohort tracking
 export async function trackCohort(cohortName: string, properties: Record<string, any> = {}) {
   try {
+    if (!supabase) return;
+
     const sessionId = getSessionId();
     const firstVisitDate = new Date().toISOString().split('T')[0];
 
