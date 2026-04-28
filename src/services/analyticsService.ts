@@ -47,6 +47,8 @@ function getUTMParams() {
 // Track page view
 export async function trackPageView(path: string, title: string) {
   try {
+    if (!supabase) return;
+
     const sessionId = getSessionId();
     const utmParams = getUTMParams();
 
@@ -120,6 +122,8 @@ export async function trackFormEvent(
   }
 ) {
   try {
+    if (!supabase) return;
+
     const sessionId = getSessionId();
 
     await supabase
@@ -154,6 +158,8 @@ export async function trackConversion(
   metadata?: Record<string, any>
 ) {
   try {
+    if (!supabase) return;
+
     const sessionId = getSessionId();
 
     await supabase
@@ -197,6 +203,8 @@ export async function trackEvent(
   metadata?: Record<string, any>
 ) {
   try {
+    if (!supabase) return;
+
     await supabase
       .from('conversion_events')
       .insert({
