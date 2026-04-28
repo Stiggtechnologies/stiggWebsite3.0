@@ -54,6 +54,11 @@ export const OperationsDashboard: React.FC = () => {
 
   const loadDashboardData = async () => {
     try {
+      if (!supabase) {
+        setLoading(false);
+        return;
+      }
+
       // Load pending quotes
       const { data: quotesData } = await supabase
         .from('quote_requests')
@@ -88,6 +93,8 @@ export const OperationsDashboard: React.FC = () => {
 
   const markAsResponded = async (quoteId: string) => {
     try {
+      if (!supabase) return;
+
       await supabase.rpc('mark_quote_responded', { quote_id: quoteId });
       loadDashboardData();
     } catch (error) {
