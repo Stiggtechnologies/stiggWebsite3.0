@@ -28,6 +28,8 @@ function dbRowToBlogPost(row: any): BlogPost {
 
 // Fetch all published posts
 export async function getAllPosts(): Promise<BlogPost[]> {
+  if (!supabase) return [];
+
   const { data, error } = await supabase
     .from('blog_posts')
     .select('*')
@@ -44,6 +46,8 @@ export async function getAllPosts(): Promise<BlogPost[]> {
 
 // Fetch featured posts
 export async function getFeaturedPosts(): Promise<BlogPost[]> {
+  if (!supabase) return [];
+
   const { data, error } = await supabase
     .from('blog_posts')
     .select('*')
@@ -62,6 +66,8 @@ export async function getFeaturedPosts(): Promise<BlogPost[]> {
 
 // Fetch post by slug
 export async function getPostBySlug(slug: string): Promise<BlogPost | null> {
+  if (!supabase) return null;
+
   const { data, error } = await supabase
     .from('blog_posts')
     .select('*')
@@ -84,6 +90,8 @@ export async function getPostBySlug(slug: string): Promise<BlogPost | null> {
 
 // Increment view count
 export async function incrementViewCount(slug: string): Promise<void> {
+  if (!supabase) return;
+
   const { error } = await supabase.rpc('increment_post_view', { post_slug: slug });
 
   if (error) {
@@ -93,6 +101,8 @@ export async function incrementViewCount(slug: string): Promise<void> {
 
 // Fetch posts by category
 export async function getPostsByCategory(category: string): Promise<BlogPost[]> {
+  if (!supabase) return [];
+
   const { data, error } = await supabase
     .from('blog_posts')
     .select('*')
@@ -110,6 +120,8 @@ export async function getPostsByCategory(category: string): Promise<BlogPost[]> 
 
 // Fetch all categories
 export async function getAllCategories(): Promise<string[]> {
+  if (!supabase) return [];
+
   const { data, error } = await supabase
     .from('blog_categories')
     .select('name')
@@ -125,6 +137,8 @@ export async function getAllCategories(): Promise<string[]> {
 
 // Fetch related posts
 export async function getRelatedPosts(currentPost: BlogPost, limit: number = 3): Promise<BlogPost[]> {
+  if (!supabase) return [];
+
   const { data, error } = await supabase
     .from('blog_posts')
     .select('*')
@@ -144,6 +158,8 @@ export async function getRelatedPosts(currentPost: BlogPost, limit: number = 3):
 
 // Fetch recent posts
 export async function getRecentPosts(limit: number = 5): Promise<BlogPost[]> {
+  if (!supabase) return [];
+
   const { data, error } = await supabase
     .from('blog_posts')
     .select('*')
@@ -161,6 +177,8 @@ export async function getRecentPosts(limit: number = 5): Promise<BlogPost[]> {
 
 // Search posts
 export async function searchPosts(query: string): Promise<BlogPost[]> {
+  if (!supabase) return [];
+
   const { data, error } = await supabase
     .from('blog_posts')
     .select('*')
@@ -180,6 +198,10 @@ export async function searchPosts(query: string): Promise<BlogPost[]> {
 
 // Create new blog post
 export async function createPost(post: any) {
+  if (!supabase) {
+    throw new Error('Database is not configured');
+  }
+
   const { data, error } = await supabase
     .from('blog_posts')
     .insert([post])
@@ -224,6 +246,10 @@ export async function createPost(post: any) {
 
 // Update blog post
 export async function updatePost(id: string, updates: any) {
+  if (!supabase) {
+    throw new Error('Database is not configured');
+  }
+
   const { data, error } = await supabase
     .from('blog_posts')
     .update(updates)
@@ -271,6 +297,10 @@ export async function updatePost(id: string, updates: any) {
 
 // Delete blog post
 export async function deletePost(id: string) {
+  if (!supabase) {
+    throw new Error('Database is not configured');
+  }
+
   const { error } = await supabase
     .from('blog_posts')
     .delete()
@@ -284,6 +314,10 @@ export async function deletePost(id: string) {
 
 // Get all posts including drafts and scheduled (for admin)
 export async function getAllPostsAdmin() {
+  if (!supabase) {
+    throw new Error('Database is not configured');
+  }
+
   const { data, error } = await supabase
     .from('blog_posts')
     .select('*')
@@ -299,6 +333,10 @@ export async function getAllPostsAdmin() {
 
 // Auto-publish scheduled posts (call this periodically)
 export async function autoPublishScheduledPosts() {
+  if (!supabase) {
+    throw new Error('Database is not configured');
+  }
+
   const { error } = await supabase.rpc('auto_publish_scheduled_posts');
 
   if (error) {
