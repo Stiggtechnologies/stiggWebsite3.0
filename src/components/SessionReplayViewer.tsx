@@ -60,6 +60,11 @@ export const SessionReplayViewer: React.FC<SessionReplayViewerProps> = ({
   const fetchRecordings = async () => {
     setLoading(true);
     try {
+      if (!supabase) {
+        setLoading(false);
+        return;
+      }
+
       const { data } = await supabase
         .from('session_recordings')
         .select('*')
