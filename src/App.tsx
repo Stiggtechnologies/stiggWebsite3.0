@@ -12,6 +12,7 @@ import { About } from './pages/About';
 import { Services } from './pages/Services';
 import { ServiceDetail } from './pages/ServiceDetail';
 import { SecureTransport } from './pages/SecureTransport';
+import { EdmontonLocation } from './pages/EdmontonLocation';
 import { Blog } from './pages/Blog';
 import { BlogPost } from './pages/BlogPost';
 import { Quote } from './pages/Quote';
@@ -73,6 +74,7 @@ function App() {
             <Route path="/blog/:slug" element={<BlogPost />} />
             <Route path="/quote" element={<Quote />} />
             <Route path="/contact" element={<Contact />} />
+            <Route path="/locations/edmonton" element={<EdmontonLocation />} />
             <Route path="/privacy" element={<Privacy />} />
             <Route path="/terms" element={<Terms />} />
             <Route path="/guard-headshots-review" element={<GuardHeadshotReview />} />
