@@ -270,7 +270,7 @@ What security concerns can I help you address today?`;
           </div>
           <div>
             <h3 className="font-semibold">AI Security Expert</h3>
-            <p className="text-sm text-blue-100">Powered by GPT-4</p>
+            <p className="text-sm text-blue-100">AI assistant</p>
           </div>
         </div>
         <button
