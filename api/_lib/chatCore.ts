@@ -89,19 +89,27 @@ export function validateChatRequest(body: unknown): ValidationResult {
 // Provider plan
 // ---------------------------------------------------------------------------
 
-export type ProviderName = 'vercel-ai-gateway' | 'openrouter';
+export type ProviderName = 'vercel-ai-gateway' | 'nvidia-nim' | 'openrouter';
 
 export interface Attempt {
   provider: ProviderName;
   model: string;
 }
 
-// DeepSeek first (Orville's pick). OpenRouter currently lists no ":free" DeepSeek
-// model, so DeepSeek runs through the AI Gateway and OpenRouter uses free models.
+// Tier 1 — Vercel AI Gateway. DeepSeek first (Orville's pick).
 export const DEFAULT_GATEWAY_MODELS = ['deepseek/deepseek-v4-flash', 'openai/gpt-4o-mini'];
+// Tier 2 — NVIDIA NIM (integrate.api.nvidia.com), Nemotron first.
+// Ids verified against https://integrate.api.nvidia.com/v1/models (2026-11-12).
+export const DEFAULT_NVIDIA_MODELS = [
+  'nvidia/nemotron-3.5-lightning-30b-a3b',
+  'nvidia/nemotron-3-super-120b-a12b',
+  'openai/gpt-oss-20b'
+];
+// Tier 3 — OpenRouter free models, Nemotron first. OpenRouter lists no ":free"
+// DeepSeek model, which is why DeepSeek runs through the AI Gateway.
 export const DEFAULT_OPENROUTER_FREE_MODELS = [
-  'google/gemma-4-31b-it:free',
   'nvidia/nemotron-3.5-lightning:free',
+  'google/gemma-4-31b-it:free',
   'openrouter/free'
 ];
 
@@ -123,6 +131,11 @@ export function buildAttemptPlan(env: Env): Attempt[] {
   if (gatewayAvailable(env)) {
     for (const model of parseModelList(env.AI_GATEWAY_MODELS ?? env.AI_GATEWAY_MODEL, DEFAULT_GATEWAY_MODELS)) {
       plan.push({ provider: 'vercel-ai-gateway', model });
+    }
+  }
+  if (env.NVIDIA_API_KEY) {
+    for (const model of parseModelList(env.NVIDIA_MODELS, DEFAULT_NVIDIA_MODELS)) {
+      plan.push({ provider: 'nvidia-nim', model });
     }
   }
   if (env.OPENROUTER_API_KEY) {

@@ -1,6 +1,6 @@
 // POST /api/chat — server-side AI chat for the "AI Security Expert" widget.
 // Primary: Vercel AI Gateway (AI_GATEWAY_API_KEY or Vercel OIDC).
-// Fallback: OpenRouter free models (OPENROUTER_API_KEY).
+// Fallback 1: NVIDIA NIM (NVIDIA_API_KEY). Fallback 2: OpenRouter free models (OPENROUTER_API_KEY).
 // No provider keys are ever sent to the browser.
 import { gateway, generateText } from 'ai';
 import { createOpenAICompatible } from '@ai-sdk/openai-compatible';
@@ -44,8 +44,25 @@ function getOpenRouter() {
   return openrouter;
 }
 
+let nvidia: ReturnType<typeof createOpenAICompatible> | undefined;
+function getNvidia() {
+  nvidia ??= createOpenAICompatible({
+    name: 'nvidia-nim',
+    baseURL: 'https://integrate.api.nvidia.com/v1',
+    apiKey: process.env.NVIDIA_API_KEY
+  });
+  return nvidia;
+}
+
 function modelFor(attempt: Attempt) {
-  return attempt.provider === 'vercel-ai-gateway' ? gateway(attempt.model) : getOpenRouter().chatModel(attempt.model);
+  switch (attempt.provider) {
+    case 'vercel-ai-gateway':
+      return gateway(attempt.model);
+    case 'nvidia-nim':
+      return getNvidia().chatModel(attempt.model);
+    case 'openrouter':
+      return getOpenRouter().chatModel(attempt.model);
+  }
 }
 
 export async function POST(request: Request): Promise<Response> {
