@@ -1,7 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { GET, POST } from '../api/chat';
 
-const KEYS = ['AI_GATEWAY_API_KEY', 'VERCEL_OIDC_TOKEN', 'VERCEL', 'OPENROUTER_API_KEY'];
+const KEYS = ['AI_GATEWAY_API_KEY', 'VERCEL_OIDC_TOKEN', 'VERCEL', 'NVIDIA_API_KEY', 'OPENROUTER_API_KEY'];
 const saved: Record<string, string | undefined> = {};
 
 function post(body: unknown, ip = '203.0.113.1') {

@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import {
   AllProvidersFailedError,
   DEFAULT_GATEWAY_MODELS,
+  DEFAULT_NVIDIA_MODELS,
   DEFAULT_OPENROUTER_FREE_MODELS,
   RateLimiter,
   buildAttemptPlan,
@@ -14,11 +15,31 @@ import { buildSystemPrompt } from '../api/_lib/prompts';
 const opts = { perAttemptTimeoutMs: 50, totalBudgetMs: 1000 };
 
 describe('buildAttemptPlan', () => {
-  it('uses gateway first, then OpenRouter free models, DeepSeek first', () => {
-    const plan = buildAttemptPlan({ AI_GATEWAY_API_KEY: 'x', OPENROUTER_API_KEY: 'y' });
+  it('orders tiers gateway -> NVIDIA NIM -> OpenRouter free, DeepSeek first', () => {
+    const plan = buildAttemptPlan({ AI_GATEWAY_API_KEY: 'x', NVIDIA_API_KEY: 'n', OPENROUTER_API_KEY: 'y' });
     expect(plan[0]).toEqual({ provider: 'vercel-ai-gateway', model: 'deepseek/deepseek-v4-flash' });
-    expect(plan.map((a) => a.model)).toEqual([...DEFAULT_GATEWAY_MODELS, ...DEFAULT_OPENROUTER_FREE_MODELS]);
+    expect(plan.map((a) => a.model)).toEqual([
+      ...DEFAULT_GATEWAY_MODELS,
+      ...DEFAULT_NVIDIA_MODELS,
+      ...DEFAULT_OPENROUTER_FREE_MODELS
+    ]);
+    expect([...new Set(plan.map((a) => a.provider))]).toEqual(['vercel-ai-gateway', 'nvidia-nim', 'openrouter']);
     expect(plan.filter((a) => a.provider === 'openrouter').every((a) => a.model.endsWith('free'))).toBe(true);
+  });
+
+  it('puts Nemotron first in the NVIDIA and OpenRouter tiers', () => {
+    const plan = buildAttemptPlan({ NVIDIA_API_KEY: 'n', OPENROUTER_API_KEY: 'y' });
+    expect(plan.find((a) => a.provider === 'nvidia-nim')?.model).toMatch(/^nvidia\/nemotron/);
+    expect(plan.find((a) => a.provider === 'openrouter')?.model).toMatch(/^nvidia\/nemotron.*:free$/);
+  });
+
+  it('includes NVIDIA only when NVIDIA_API_KEY is set and honours NVIDIA_MODELS', () => {
+    expect(buildAttemptPlan({ VERCEL: '1' }).some((a) => a.provider === 'nvidia-nim')).toBe(false);
+    const plan = buildAttemptPlan({ NVIDIA_API_KEY: 'n', NVIDIA_MODELS: 'nvidia/a, nvidia/b' });
+    expect(plan).toEqual([
+      { provider: 'nvidia-nim', model: 'nvidia/a' },
+      { provider: 'nvidia-nim', model: 'nvidia/b' }
+    ]);
   });
 
   it('treats Vercel OIDC / runtime as gateway auth', () => {
@@ -99,6 +120,44 @@ describe('runWithFallback', () => {
       AllProvidersFailedError
     );
     await expect(runWithFallback([], async () => 'x', opts)).rejects.toThrow('No AI provider is configured');
+  });
+});
+
+describe('three-tier fallback', () => {
+  const plan = buildAttemptPlan({
+    AI_GATEWAY_API_KEY: 'x',
+    AI_GATEWAY_MODELS: 'g1',
+    NVIDIA_API_KEY: 'n',
+    NVIDIA_MODELS: 'nv1,nv2',
+    OPENROUTER_API_KEY: 'y',
+    OPENROUTER_FREE_MODELS: 'or1'
+  });
+
+  it('falls from a rate-limited gateway to NVIDIA NIM', async () => {
+    const r = await runWithFallback(
+      plan,
+      async (a) => {
+        if (a.provider === 'vercel-ai-gateway') throw Object.assign(new Error('rate limited'), { statusCode: 429 });
+        return `from ${a.model}`;
+      },
+      opts
+    );
+    expect(r.attempt).toEqual({ provider: 'nvidia-nim', model: 'nv1' });
+  });
+
+  it('falls through NVIDIA errors/timeouts to OpenRouter free', async () => {
+    const r = await runWithFallback(
+      plan,
+      (a) => {
+        if (a.provider === 'openrouter') return Promise.resolve('free reply');
+        if (a.model === 'nv2') return new Promise<string>((resolve) => setTimeout(() => resolve('late'), 500));
+        return Promise.reject(new Error('500 upstream'));
+      },
+      opts
+    );
+    expect(r.attempt.provider).toBe('openrouter');
+    expect(r.failures.map((f) => f.attempt.model)).toEqual(['g1', 'nv1', 'nv2']);
+    expect(r.failures[2].error).toContain('TimeoutError');
   });
 });
 
